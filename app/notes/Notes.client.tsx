@@ -15,9 +15,13 @@ import { Toaster, toast } from "react-hot-toast";
 
 const PER_PAGE = 12;
 
-const NotesClient: React.FC = () => {
+interface NotesClientProps {
+  initialData: FetchNotesResponse;
+}
+
+const NotesClient: React.FC<NotesClientProps> = ({ initialData }) => {
   const [page, setPage] = useState(1);
-  const [pageCount, setPageCount] = useState(0);
+  const [pageCount, setPageCount] = useState(initialData.totalPages);
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 500);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,6 +35,7 @@ const NotesClient: React.FC = () => {
     queryKey: ["notes", page, PER_PAGE, debouncedSearch],
     queryFn: () => fetchNotes({ page, perPage: PER_PAGE, search: debouncedSearch }),
     placeholderData: keepPreviousData,
+    initialData: page === 1 && !debouncedSearch ? initialData : undefined,
   });
 
   useEffect(() => {
